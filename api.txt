@@ -1,0 +1,69 @@
+1. 核心概念
+  entry
+  入口，Webpack执行构建的第一步将从entry开始，可抽象成输入；
+  module.exports = {
+    entry: './main.js'
+  };
+
+  output
+  输出结果，在Webpack经过一系列处理并得到最终想要的代码后输出结果；
+  module.exports = {
+    entry: './main.js',
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, './dist');
+    }
+  };
+
+  loader
+  模块转换器，用于将模块的原内容按照需求转换成新内容；
+  module.exports = {
+    entry: './main.js',
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, './dist');
+    },
+    module: {
+      rules: [
+        {
+          test: /\.css$/,
+          use: ['style-loader', 'css-loader?minimize'],
+        }
+      ]
+    }
+  };
+
+  plugins
+  扩展插件，在Webpack构建流程中的特定时机注入扩展逻辑，来改变构建结果或我们想做的事情；
+  module.exports = {
+    entry: './main.js',
+    output: {
+      filename: 'bundle.js',
+      path: path.resolve(__dirname, './dist');
+    },
+    module: {
+      rules: [
+        {
+          test: /\.css$/,
+          loaders: ExtractTextPlugin.extract({
+            use: ['css-loader']
+          })
+        }
+      ]
+    },
+    plugins: [
+      new ExtractTextPlugin({
+        fliename: `[name]_[contenthash:8].css`,
+      })
+    ]
+  };
+
+  module
+  模块，在Webpack里一切皆模块，一个模块对应一个文件。Webpack会从配置的entry开始递归找出所有依赖的模块；
+
+  chunk
+  代码块，一个chunk由多个模块组合而成，用于代码合并与分割；
+
+总结： Webpack在启动后会从Entry里配置的Module开始，递归解析Entry依赖的所有Module。每找到一个Module，就会根据配置的Loader去找出对应的转换规则，对Module进行转换后，再解析出当前Module依赖的Module。这些模块会以Entry为单位进行分组，一个Entry及其所有依赖的Module被分到一个组也就是一个Chunk。最后Webpack会将所有Chunk转换成文件输出，在整个流程中，Webpack会在恰当的时机执行Plugin里定义的逻辑。
+
+
