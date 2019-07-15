@@ -1,6 +1,7 @@
 'use strict';
 const path = require('path')
 const webpack =require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   // entry: './src/index.js',
   entry: {
@@ -54,7 +55,12 @@ module.exports = {
     ]
   },
   plugins:[
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new HtmlWebpackPlugin(
+      {
+        
+      }
+    )
   ],
   devServer:{
     contentBase: './dist',
