@@ -1,23 +1,34 @@
 'use strict';
+const glob = require('glob')
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtraactPlugin = require('mini-css-extract-plugin')
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const MiniCssExtraactPlugin = require('mini-css-extract-plugin') // css抽离成文件
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin') // 压缩css
 const {
   CleanWebpackPlugin
 } = require('clean-webpack-plugin');
-
+const setMap = () =>{
+  const entry = {}
+  const HtmlWebpackPlugin = []
+  const entryFiles = glob.sync(path.join(__dirname, './src/*/index.js'))
+  console.log('entryFiles' + Object.keys(entryFiles))
+  return {
+    entry,
+    HtmlWebpackPlugin
+  }
+}
 module.exports = {
-  // entry: './src/index.js',
+  // entry: './index.js',
+  context: path.resolve(__dirname, 'src'),
   entry: {
-    main: './src/index.js',
-    seacth: './src/seacth.js'
+    main: './index/index.js',
+    seacth: './seacth/seacth.js'
   },
   // [name] 名字的展位
   // [chunkhash:8] 哈希值取前八位 默认是32位
   output: {
-    path: path.join(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist'),
     filename: '[name]_[chunkhash:8].js'
   },
   // 生产环境mode 自动启动webpack的一切压缩优化之类的
@@ -35,9 +46,10 @@ module.exports = {
           // 'style-loader',
           {
             loader: MiniCssExtraactPlugin.loader,
-            // options: {
-            //   publicPath: '../'
-            // }
+            options: {
+              // publicPath: '../'
+              insertAt: 'top'
+            }
           },
           'css-loader',
           {
@@ -56,7 +68,13 @@ module.exports = {
         test: /.less$/,
         use: [
           // 'style-loader',
-          MiniCssExtraactPlugin.loader,
+          {
+            loader:MiniCssExtraactPlugin.loader,
+            options: {
+              // publicPath: '../'
+              insertAt: 'bottom'
+            }
+          },
           'css-loader',
           'less-loader',
           {
@@ -118,17 +136,17 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: 'App', // 网页 document.title 的配置
       filename: 'app.html', // 文件名字
-      template: 'src/public/index.html', // 入口模版 默认找 src/index.html
+      template: './public/index.html', // 入口模版 默认找 src/index.html
       inject: true,
       favicon: '', // 为生成的 html 配置一个 favicon
       minify: {
-        html5: true,
-        collapseWhitespace: true,
-        removeComments: true,
-        removeRedundantAttributes: true,
-        removeScriptTypeAttributes: true,
-        removeStyleLinkTypeAttributes: true,
-        useShortDoctype: true
+        html5: false,
+        collapseWhitespace: false,
+        removeComments: false,
+        removeRedundantAttributes: false,
+        removeScriptTypeAttributes: false,
+        removeStyleLinkTypeAttributes: false,
+        useShortDoctype: false
       }
     }),
     // 清理dist目录
@@ -145,3 +163,7 @@ module.exports = {
     poll: 1000
   } */
 }
+function foo() {
+  console.log(111)
+  setTimeout(foo, 0); // 是否存在堆栈溢出错误?
+}; 
