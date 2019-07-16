@@ -8,23 +8,57 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin') //
 const {
   CleanWebpackPlugin
 } = require('clean-webpack-plugin');
-const setMap = () =>{
-  const entry = {}
-  const HtmlWebpackPlugin = []
+const setMap = () => {
+  const entry = {
+    // main: './index/index.js'
+  }
+  const HtmlPlugin = []
   const entryFiles = glob.sync(path.join(__dirname, './src/*/index.js'))
-  console.log('entryFiles' + Object.keys(entryFiles))
+  Object.keys(entryFiles).map((index) => {
+    const entryFile = entryFiles[index];
+    const match = entryFile.match(/src\/(.*)\/index\.js/);
+    const pageName = match && match[1];
+    entry[pageName] = entryFile
+    HtmlPlugin.push(
+      new HtmlWebpackPlugin({
+        inlineSource: '.css$',
+        template: path.join(__dirname, `src/${pageName}/index.html`),
+        filename: `${pageName}.html`, // 文件名字
+        chunks: [pageName],
+        // 有四个选项值 true, body, head, false. 
+        // true body 默认值，script标签位于html文件的 body 底部
+        // head script 标签位于 head 标签内
+        // false 不插入生成的 js 文件，只是单纯的生成一个 html 文件
+        inject: true,
+        minify: {
+          html5: false,
+          collapseWhitespace: false,
+          preserveLineBreaks: false,
+          minifyCSS: false,
+          minifyJS: false,
+          removeComments: false
+        }
+      })
+    )
+  })
+  console.log('entry----------' + JSON.stringify(entry))
   return {
     entry,
-    HtmlWebpackPlugin
+    HtmlPlugin
   }
 }
+const {
+  entry,
+  HtmlPlugin
+} = setMap()
 module.exports = {
   // entry: './index.js',
-  context: path.resolve(__dirname, 'src'),
-  entry: {
-    main: './index/index.js',
-    seacth: './seacth/seacth.js'
-  },
+  // context: path.resolve(__dirname, 'src'),
+  // entry: {
+  //   main: './index/index.js',
+  //   seacth: './seacth/seacth.js'
+  // },
+  entry: entry,
   // [name] 名字的展位
   // [chunkhash:8] 哈希值取前八位 默认是32位
   output: {
@@ -69,7 +103,7 @@ module.exports = {
         use: [
           // 'style-loader',
           {
-            loader:MiniCssExtraactPlugin.loader,
+            loader: MiniCssExtraactPlugin.loader,
             options: {
               // publicPath: '../'
               insertAt: 'bottom'
@@ -89,7 +123,7 @@ module.exports = {
           },
           {
             loader: 'px2rem-loader',
-            options:{
+            options: {
               remUnit: 75, // 75px
               remPrecesion: 8 //转换成rem小数点位数
             }
@@ -133,9 +167,9 @@ module.exports = {
       cssProcessor: require('cssnano')
     }),
     // html 压缩 生产
-    new HtmlWebpackPlugin({
+    /* new HtmlWebpackPlugin({
       title: 'App', // 网页 document.title 的配置
-      filename: 'app.html', // 文件名字
+      filename: 'app.html', // 
       template: './public/index.html', // 入口模版 默认找 src/index.html
       inject: true,
       favicon: '', // 为生成的 html 配置一个 favicon
@@ -148,7 +182,8 @@ module.exports = {
         removeStyleLinkTypeAttributes: false,
         useShortDoctype: false
       }
-    }),
+    }), */
+    ...HtmlPlugin,
     // 清理dist目录
     new CleanWebpackPlugin()
   ]
@@ -163,7 +198,3 @@ module.exports = {
     poll: 1000
   } */
 }
-function foo() {
-  console.log(111)
-  setTimeout(foo, 0); // 是否存在堆栈溢出错误?
-}; 
