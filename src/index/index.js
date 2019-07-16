@@ -1,3 +1,3 @@
-import hellow from './holle'
 
-document.write(hellow())
+
+document.write('333')

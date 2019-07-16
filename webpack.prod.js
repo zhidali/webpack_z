@@ -10,7 +10,7 @@ const {
 } = require('clean-webpack-plugin');
 const setMap = () => {
   const entry = {
-    // main: './index/index.js'
+    // index: './src/index/index.js'
   }
   const HtmlPlugin = []
   const entryFiles = glob.sync(path.join(__dirname, './src/*/index.js'))
@@ -66,7 +66,8 @@ module.exports = {
     filename: '[name]_[chunkhash:8].js'
   },
   // 生产环境mode 自动启动webpack的一切压缩优化之类的
-  mode: 'production',
+  // mode: 'production',
+  mode: 'none',
   // 开发环境
   // mode: 'development',
   module: {
@@ -186,7 +187,8 @@ module.exports = {
     ...HtmlPlugin,
     // 清理dist目录
     new CleanWebpackPlugin()
-  ]
+  ],
+  devtool: 'source-map', // 映射map调试
   // 开启webpack监听，默认是false
   /* watch: true,
   watchOptions:{

@@ -1,4 +1,4 @@
-'use strict'
+/* 'use strict'
 import React, {Component} from 'react'
 import ReactDom from 'react-dom'
 import './seacth.less'
@@ -17,4 +17,5 @@ class Seacth extends Component {
 ReactDom.render(
   <Seacth />,
   document.getElementById('root')
-)
+) */
+console.log(111)
